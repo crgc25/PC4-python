@@ -1,0 +1,29 @@
+nombre_fichero = 'temperaturas.txt'
+
+sum_temperaturas = 0
+contador = 0
+temperatura_max = None
+temperatura_min = None
+
+with open(nombre_fichero, 'r') as fichero:
+    for linea in fichero:
+        linea = linea.strip()
+        if not linea:
+            continue  # saltar líneas vacías
+        fecha, temp_str = linea.split(',')
+        temperatura = float(temp_str)
+
+        sum_temperaturas += temperatura
+        contador += 1
+
+        if temperatura_max is None or temperatura > temperatura_max:
+            temperatura_max = temperatura
+
+        if temperatura_min is None or temperatura < temperatura_min:
+            temperatura_min = temperatura
+
+temperatura_promedio = sum_temperaturas / contador if contador != 0 else 0
+
+print(f"Temperatura promedio: {temperatura_promedio:.2f}°C")
+print(f"Temperatura máxima: {temperatura_max:.2f}°C")
+print(f"Temperatura mínima: {temperatura_min:.2f}°C")
