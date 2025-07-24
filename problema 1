@@ -1,29 +1,34 @@
-nombre_fichero = 'temperaturas.txt'
+import requests
 
-sum_temperaturas = 0
-contador = 0
-temperatura_max = None
-temperatura_min = None
+url = "https://raw.githubusercontent.com/gdelgador/ProgramacionPython202506/main/Modulo4/src/temperaturas.txt"
 
-with open(nombre_fichero, 'r') as fichero:
-    for linea in fichero:
-        linea = linea.strip()
-        if not linea:
-            continue  # saltar líneas vacías
-        fecha, temp_str = linea.split(',')
-        temperatura = float(temp_str)
+response = requests.get(url)
+if response.status_code == 200:
+    lineas = response.text.strip().split('\n')
+else:
+    print("Error al acceder al fichero")
+    lineas = []
 
-        sum_temperaturas += temperatura
-        contador += 1
+temperaturas = []
 
-        if temperatura_max is None or temperatura > temperatura_max:
-            temperatura_max = temperatura
+for linea in lineas:
+    partes = linea.split(',')
+    if len(partes) == 2:
+        fecha, temp_str = partes
+        try:
+            temp = float(temp_str)
+            temperaturas.append(temp)
+        except ValueError:
+            print(f"Valor de temperatura inválido: {temp_str}")
 
-        if temperatura_min is None or temperatura < temperatura_min:
-            temperatura_min = temperatura
+if temperaturas:
+    promedio = sum(temperaturas) / len(temperaturas)
+    max_temp = max(temperaturas)
+    min_temp = min(temperaturas)
+else:
+    promedio = max_temp = min_temp = 0
 
-temperatura_promedio = sum_temperaturas / contador if contador != 0 else 0
-
-print(f"Temperatura promedio: {temperatura_promedio:.2f}°C")
-print(f"Temperatura máxima: {temperatura_max:.2f}°C")
-print(f"Temperatura mínima: {temperatura_min:.2f}°C")
+with open('resumen_temperaturas.txt', 'w') as f:
+    f.write(f"Temperatura promedio: {promedio:.2f}\n")
+    f.write(f"Temperatura máxima: {max_temp:.2f}\n")
+    f.write(f"Temperatura mínima: {min_temp:.2f}\n")
